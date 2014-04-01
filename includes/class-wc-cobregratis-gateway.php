@@ -50,6 +50,8 @@ class WC_Cobregratis_Gateway extends WC_Payment_Gateway {
 		$this->fines         = $this->get_option( 'fines' );
 		$this->interest_day  = $this->get_option( 'interest_day' );
 		$this->notification  = $this->get_option( 'notification' );
+		$this->kind          = $this->get_option( 'kind' );
+		$this->parcel        = $this->get_option( 'parcels' );
 		$this->debug         = $this->get_option( 'debug' );
 
 		// Actions.
@@ -168,6 +170,12 @@ class WC_Cobregratis_Gateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function init_form_fields() {
+
+	$kind_options = array();
+	$kind_options[ 'normal' ] = 'Normal';
+	$kind_options[ 'parceled' ] = 'Parcelado';
+	$kind_options[ 'recurrent' ] = 'Assinatura';
+
 		$this->form_fields = array(
 			'enabled' => array(
 				'title'   => __( 'Enable/Disable', $this->plugin_slug ),
@@ -242,6 +250,22 @@ class WC_Cobregratis_Gateway extends WC_Payment_Gateway {
 				'description' => __( 'If the ticket has not been paid after 2 days of winning you will receive a notification in your Cobre Gr&aacute;tis email.', $this->plugin_slug ),
 				'default'     => ''
 			),
+      'kind' => array(
+      	'title'       => __( 'Bank billet kind', $this->plugin_slug ),
+      	'type'        => 'select',
+      	'class'       => 'chosen_select',
+      	'css'         => 'width: 450px;',
+      	'default'     => 'normal',
+      	'description' => __( 'Kind of billet generated. It can be normal, parceled or recurrent', $this->plugin_slug ),
+      	'options'     => $kind_options,
+      	'desc_tip'    => true
+      ),
+      'parcels' => array(
+      	'title'       => __( 'Number of parcels allowed', $this->plugin_slug ),
+      	'type'        => 'text',
+      	'description' => __( 'If you select bank billet kind as parceled, you can configure number of maximum parcels is allowed to be generated. Cobre Grátis maximum is 12', $this->plugin_slug ),
+      	'default'     => ''
+      ),
 			'testing' => array(
 				'title'       => __( 'Gateway Testing', $this->plugin_slug ),
 				'type'        => 'title',
@@ -272,7 +296,6 @@ class WC_Cobregratis_Gateway extends WC_Payment_Gateway {
 			'name'                 => $order->billing_first_name . ' ' . $order->billing_last_name,
 
 			// Order data.
-			'amount'               => number_format( $order->order_total, 2, ',', '' ),
 			'expire_at'            => date( 'd/m/Y', time() + ( $this->days_to_pay * 86400 ) ),
 
 			// Document data.
@@ -285,14 +308,30 @@ class WC_Cobregratis_Gateway extends WC_Payment_Gateway {
 			'instructions'         => $this->instructions,
 			'percent_fines'        => $this->fines,
 			'percent_interest_day' => $this->interest_day,
+			'kind'                 => $this->kind,
 
 			// Meta for IPN.
 			'meta'                 => 'order-' . $this->id
 		);
 
+
+		// Number of billets. normal parceled recurrent
+		if ( isset( $order->parcels ) && ! empty( $order->parcels ) ) {
+			if(13 > $order->parcels){
+				$args['amount']  = number_format( ($order->order_total/12), 2, ',', '' );
+        $args['parcels'] = 12;
+      } else {
+      	$args['amount']  = number_format( ($order->order_total/$order->parcels), 2, ',', '' );
+        $args['parcels'] = $order->parcels;
+      }
+		} else {
+			$args['amount']  = number_format( $order->order_total, 2, ',', '' );
+      $args['parcels'] = 1;
+		}
+
 		// WooCommerce Extra Checkout Fields for Brazil person type fields.
 		if ( isset( $order->billing_persontype ) && ! empty( $order->billing_persontype ) ) {
-			if ( 2 == $order->billing_persontyp ) {
+			if ( 2 == $order->billing_persontype ) {
 				$args['cnpj_cpf'] = $order->billing_cnpj;
 			} else {
 				$args['cnpj_cpf'] = $order->billing_cpf;

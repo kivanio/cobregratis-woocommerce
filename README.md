@@ -81,8 +81,8 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 1. Crie uma conta Premium ou Max no [Cobre Grátis](http://cobregratis.com.br/planos/);
 2. Com a conta é possível gerar um Token em [Cobre Grátis - Minhas informações](https://app.cobregratis.com.br/myinfo);
-3. E finalmente crie um serviço em [Cobre Grátis - Serviços](https://app.cobregratis.com.br/services/new);
-4. No serviço criado ative a opção **Usar integração de notificação de pagamento**;
+3. E finalmente crie um webhook em [Cobre Grátis - Web Hook](https://app.cobregratis.com.br/web_hooks/new);
+4. No webhook criado selecione **Pago** em **Evento**;
 5. Crie um **Código de Segurança** para a integração do serviço;
 6. E configure a **URL para webhook de pagamento de boletos** como por exemplo `http://seusite.com.br/?wc-api=WC_Cobregratis_Gateway`;
 7. Pronto, conta configurada.
@@ -254,13 +254,14 @@ Acesse a [FAQ do Cobre Grátis](http://suporte.cobregratis.com.br/hc/pt-br).
 
 ## Changelog ##
 
-### 1.0.0 ###
+### 1.0.1 ###
 
 * Initial release.
+* Include option to select bank billed kind
 
 ## Upgrade Notice ##
 
-### 1.0.0 ###
+### 1.0.1 ###
 
 * Initial release.
 
