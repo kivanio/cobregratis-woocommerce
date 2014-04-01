@@ -314,7 +314,6 @@ class WC_Cobregratis_Gateway extends WC_Payment_Gateway {
 			'meta'                 => 'order-' . $this->id
 		);
 
-
 		// Number of billets. normal parceled recurrent
 		if ( isset( $order->parcels ) && ! empty( $order->parcels ) ) {
 			if(13 > $order->parcels){

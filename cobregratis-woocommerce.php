@@ -70,6 +70,7 @@ function wc_cobregratis_gateway_init() {
 
 	// Include the WC_Cobregratis_Gateway class.
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-cobregratis-gateway.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/select-text-woo-checkoutt.php';
 }
 
 add_action( 'plugins_loaded', 'wc_cobregratis_gateway_init', 0 );
